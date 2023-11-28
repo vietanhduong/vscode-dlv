@@ -83,15 +83,13 @@ kubectl apply -f $REPO_ROOT/dlv-pod.yaml
 wait_pod_ready "$POD_NAME" || exit 1
 
 if [[ -n "$TP" ]]; then
+  namespace="$(kubectl get pod $POD_NAME -ojsonpath='{.metadata.namespace}')"
   status="$($TP status --output=json | jq -r ".user_daemon.status")"
   if [[ ! "$status" = "Connected" ]]; then
-    echo "$TP has not connected yet; preparing to connect."
-    if ! $TP connect; then
-      echo "$TP connection was unsuccessful. Attempting to run '$TP helm install'."
-      $TP helm install && $TP connect
-    fi
+    echo "$TP has not connected yet; please connect the $TP first" >&2
+    exit 1
   fi
-  echo "Please connect to go-dlv using the address $POD_NAME:$TARGET_PORT"
+  echo "Please connect to go-dlv using the address ${POD_NAME}.${namespace}:${TARGET_PORT}"
 else
   kubectl port-forward cooper-agent 40000 &
   echo "Please connect to go-dlv using address localhost:$TARGET_PORT"
