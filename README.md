@@ -2,6 +2,8 @@
 
 A demonstrate for debugging in Kubernetes by leveraging go-dlv and VSCode.
 
+![gif.gif](./gif.gif)
+
 ### Notes
 
 - This repository demonstrates a PoC structure to debug a go application inside a container running in Kubernetes.
