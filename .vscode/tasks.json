@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "pre-remote-debug",
+      "type": "shell",
+      "command": "${workspaceFolder}/deploy.sh"
+    }
+  ]
+}

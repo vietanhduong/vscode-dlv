@@ -1,0 +1,63 @@
+# Required for Telepresence
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote-debug
+spec:
+  selector:
+    app: remote-debug
+  ports:
+    - targetPort: 40000
+      port: 40000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: remote-debug
+  labels:
+    app: remote-debug
+spec:
+  containers:
+    - image: remote-debug
+      # DO NOT CHANGE TO "Always". Doing so will make Kubernetes use local
+      # images instead of pulling them from the internet.
+      imagePullPolicy: IfNotPresent
+      name: agent
+      args:
+        - bash
+        - -c
+        - >
+          /bin/dlv --listen=:40000 \
+            --headless=true  \
+            --api-version=2 \
+            --accept-multiclient \
+            exec /host-bin/app
+      env: []
+      resources: {}
+      securityContext:
+        capabilities:
+          add:
+            # Required capability for debugging
+            - SYS_PTRACE
+            # Enable this if you are working with eBPF
+            # - SYS_ADMIN
+        # privileged: true
+        # seccompProfile:
+        #   type: RuntimeDefault
+      volumeMounts:
+        - mountPath: /host-bin
+          name: host-bin
+          readOnly: true
+  # These options bellow are useful for eBPF
+  # hostPID: true
+  # hostNetwork: true
+  # dnsPolicy: ClusterFirstWithHostNet
+  # securityContext:
+  #   seccompProfile:
+  #     type: RuntimeDefault
+  volumes:
+    - hostPath:
+        path: /tmp
+        type: Directory
+      name: host-bin

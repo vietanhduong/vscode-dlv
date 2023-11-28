@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "name": "Remote Debug",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      // Change this to localhost if you don't have telepresence
+      "host": "remote-debug.default.svc.cluster.local",
+      "port": 40000,
+      "debugAdapter": "dlv-dap",
+      // This task will trigger the deploy script each time
+      // you use the 'Run and Debug' function.
+      "preLaunchTask": "pre-remote-debug"
+    }
+  ]
+}
